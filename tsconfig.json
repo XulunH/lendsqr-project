@@ -40,6 +40,7 @@
     "strict": true,
     //"jsx": "react-jsx",
     //"verbatimModuleSyntax": true,
+    "allowJs": true,
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
