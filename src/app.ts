@@ -13,8 +13,14 @@ app.get('/health', (req, res) => {
 });
 
 app.use('/api/users', userRoutes);
-app.use('/api/users', userRoutes);
 app.use('/api/wallet', walletRoutes);
+
+app.use((req, res) => {
+  res.status(404).json({
+    status: 'error',
+    message: `Route ${req.method} ${req.originalUrl} not found`,
+  });
+});
 
 app.use(errorHandler); 
 
