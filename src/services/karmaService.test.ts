@@ -13,9 +13,16 @@ describe('karmaService.isBlacklisted', () => {
   it('returns true when the identity IS found in the blacklist', async () => {
     vi.mocked(axios.get).mockResolvedValue({
       data: { data: { karma_identity: 'bad@example.com' } },
-    });
+    }); //karma id found
     await expect(isBlacklisted('bad@example.com')).resolves.toBe(true);
   });
+
+  it('returns false when the server returns 200 but no karma record (test mode)', async () => {
+    vi.mocked(axios.get).mockResolvedValue({
+        data: { data: null },   // 200 OK, but no karma id found, which happens under test mode 
+    });
+    await expect(isBlacklisted('anyone@example.com')).resolves.toBe(false);
+});
 
   it('returns false when the identity is NOT found (404)', async () => {
     vi.mocked(axios.get).mockRejectedValue({ response: { status: 404 } });
