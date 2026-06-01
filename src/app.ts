@@ -1,6 +1,7 @@
 import express from 'express';
 import userRoutes from './routes/userRoutes.js';
 import { errorHandler } from './middleware/errorHandler.js';
+import walletRoutes from './routes/walletRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -12,6 +13,8 @@ app.get('/health', (req, res) => {
 });
 
 app.use('/api/users', userRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/wallet', walletRoutes);
 
 app.use(errorHandler); 
 

@@ -4,7 +4,6 @@ import type { User } from '../types/models.js';
 
 export interface CreateUserData {
   email: string;
-  password_hash: string;
   first_name: string;
   last_name: string;
 }

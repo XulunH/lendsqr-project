@@ -24,7 +24,7 @@ describe('userService.register', () => {
     vi.mocked(isBlacklisted).mockResolvedValue(true);
 
     await expect(
-      register({ email: 'bad@example.com', password: 'pw', firstName: 'A', lastName: 'B' })
+      register({ email: 'bad@example.com',  firstName: 'A', lastName: 'B' })
     ).rejects.toThrow('blacklisted');
   });
 
@@ -32,7 +32,7 @@ describe('userService.register', () => {
     vi.mocked(userRepository.findByEmail).mockResolvedValue({ id: 1 } as never);
 
     await expect(
-      register({ email: 'dupe@example.com', password: 'pw', firstName: 'A', lastName: 'B' })
+      register({ email: 'dupe@example.com', firstName: 'A', lastName: 'B' })
     ).rejects.toThrow('already exists');
   });
 
@@ -43,7 +43,7 @@ describe('userService.register', () => {
     vi.mocked(walletRepository.create).mockResolvedValue(1);
 
     const result = await register({
-      email: 'good@example.com', password: 'pw', firstName: 'A', lastName: 'B',
+      email: 'good@example.com', firstName: 'A', lastName: 'B',
     });
 
     expect(result.user.id).toBe(42);
