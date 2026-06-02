@@ -38,7 +38,7 @@ export async function withdraw(userId: number, amount: number) {
   assertValidAmount(amount);
 
   return db.transaction(async (trx) => {
-    const wallet = await walletRepository.findByUserIdForUpdate(userId, trx);
+    const wallet = await walletRepository.lockWalletByUserId(userId, trx);
     if (!wallet) throw new AppError('Wallet not found', 404);
 
     if (Number(wallet.balance) < amount) {
@@ -63,7 +63,7 @@ export async function transfer(senderUserId: number, recipientEmail: string, amo
     if (!recipient) throw new AppError('Recipient not found', 404);
     if (recipient.id === senderUserId) throw new AppError('You cannot transfer to yourself', 400);
 
-    const wallets = await walletRepository.findForUpdateByUserIds([senderUserId, recipient.id], trx);
+    const wallets = await walletRepository.lockWalletsByUserIds([senderUserId, recipient.id], trx);
     const senderWallet = wallets.find((w) => w.user_id === senderUserId);
     const recipientWallet = wallets.find((w) => w.user_id === recipient.id);
 

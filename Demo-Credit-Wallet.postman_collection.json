@@ -69,6 +69,14 @@
         }
       },
       {
+        "name": "Get Balance (Bob)",
+        "request": {
+          "method": "GET",
+          "header": [{ "key": "Authorization", "value": "Bearer {{tokenB}}" }],
+          "url": "{{baseUrl}}/api/wallet/balance"
+        }
+      },
+      {
         "name": "Transfer Alice -> Bob",
         "request": {
           "method": "POST",

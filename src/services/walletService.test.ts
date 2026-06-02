@@ -35,12 +35,12 @@ describe('walletService', () => {
   });
 
   it('withdraw: rejects when balance is insufficient', async () => {
-    vi.mocked(walletRepository.findByUserIdForUpdate).mockResolvedValue(wallet({ balance: '50.0000' }));
+    vi.mocked(walletRepository.lockWalletByUserId).mockResolvedValue(wallet({ balance: '50.0000' }));
     await expect(withdraw(10, 100)).rejects.toThrow('Insufficient funds');
   });
 
   it('withdraw: succeeds when funds are sufficient', async () => {
-    vi.mocked(walletRepository.findByUserIdForUpdate).mockResolvedValue(wallet({ id: 1, balance: '200.0000' }));
+    vi.mocked(walletRepository.lockWalletByUserId).mockResolvedValue(wallet({ id: 1, balance: '200.0000' }));
     await withdraw(10, 100);
     expect(walletRepository.decrementBalance).toHaveBeenCalledWith(1, 100, expect.anything());
     expect(transactionRepository.create).toHaveBeenCalledWith(
@@ -55,7 +55,7 @@ describe('walletService', () => {
 
   it('transfer: moves funds between two wallets', async () => {
     vi.mocked(userRepository.findByEmail).mockResolvedValue({ id: 20 } as never);
-    vi.mocked(walletRepository.findForUpdateByUserIds).mockResolvedValue([
+    vi.mocked(walletRepository.lockWalletsByUserIds).mockResolvedValue([
       wallet({ id: 1, user_id: 10, balance: '500.0000' }),
       wallet({ id: 2, user_id: 20, balance: '0.0000' }),
     ]);

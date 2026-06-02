@@ -20,12 +20,12 @@ export async function findByUserId(userId: number, trx?: Knex.Transaction): Prom
 }
 
 // Locks this user's wallet row for the rest of the transaction
-export async function findByUserIdForUpdate(userId: number, trx: Knex.Transaction): Promise<Wallet | undefined> {
+export async function lockWalletByUserId(userId: number, trx: Knex.Transaction): Promise<Wallet | undefined> {
   return trx<Wallet>('wallets').where({ user_id: userId }).forUpdate().first();
 }
 
 // Locks multiple wallets ordered by id to avoid deadlocks
-export async function findForUpdateByUserIds(userIds: number[], trx: Knex.Transaction): Promise<Wallet[]> {
+export async function lockWalletsByUserIds(userIds: number[], trx: Knex.Transaction): Promise<Wallet[]> {
   return trx<Wallet>('wallets').whereIn('user_id', userIds).orderBy('id', 'asc').forUpdate();
 }
 
