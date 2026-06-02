@@ -158,9 +158,45 @@ Three tables model the domain:
 
 ## E-R Diagram
 
-![E-R Diagram](docs/er-diagram.png)
+```mermaid
+erDiagram
+    USERS ||--|| WALLETS : "owns"
+    WALLETS ||--o{ TRANSACTIONS : "sends"
+    WALLETS ||--o{ TRANSACTIONS : "receives"
 
-> Designed with [dbdesigner.net](https://app.dbdesigner.net/).
+    USERS {
+        int id PK
+        string email UK
+        string first_name
+        string last_name
+        string status "default ACTIVE"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    WALLETS {
+        int id PK
+        int user_id FK "unique - one wallet per user"
+        decimal balance "DECIMAL(15,4), default 0"
+        string currency "default USD"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    TRANSACTIONS {
+        int id PK
+        string reference UK "UUID"
+        int sender_wallet_id FK "nullable - null for deposits"
+        int receiver_wallet_id FK "nullable - null for withdrawals"
+        decimal amount "DECIMAL(15,4)"
+        string currency "default USD"
+        enum type "DEPOSIT, WITHDRAWAL, TRANSFER"
+        enum status "PENDING, SUCCESS, FAILED"
+        string description "nullable"
+        timestamp created_at
+        timestamp updated_at
+    }
+```
 
 ---
 
@@ -341,7 +377,7 @@ npm test
 
 The API is deployed at:
 
-**<DEPLOYED_URL>**
+**https://jasonhuang-lendsqr-be-test.onrender.com**
 
 ---
 
