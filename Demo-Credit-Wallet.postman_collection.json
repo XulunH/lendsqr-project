@@ -1,0 +1,108 @@
+{
+    "info": {
+      "name": "Demo Credit Wallet Service",
+      "description": "Lendsqr backend assessment - wallet MVP. Run requests top-to-bottom.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+      { "key": "baseUrl", "value": "https://jasonhuang-lendsqr-be-test.onrender.com" },
+      { "key": "tokenA", "value": "" },
+      { "key": "tokenB", "value": "" },
+      { "key": "emailB", "value": "" }
+    ],
+    "item": [
+      {
+        "name": "Health Check",
+        "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/health" }
+      },
+      {
+        "name": "Create User A (Alice)",
+        "event": [
+          { "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "const json = pm.response.json();",
+            "if (json.data && json.data.token) { pm.collectionVariables.set('tokenA', json.data.token); }"
+          ] } }
+        ],
+        "request": {
+          "method": "POST",
+          "header": [{ "key": "Content-Type", "value": "application/json" }],
+          "body": { "mode": "raw", "raw": "{\n  \"email\": \"alice_{{$timestamp}}@example.com\",\n  \"firstName\": \"Alice\",\n  \"lastName\": \"A\"\n}" },
+          "url": "{{baseUrl}}/api/users"
+        }
+      },
+      {
+        "name": "Create User B (Bob)",
+        "event": [
+          { "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "const json = pm.response.json();",
+            "if (json.data) {",
+            "  pm.collectionVariables.set('tokenB', json.data.token);",
+            "  pm.collectionVariables.set('emailB', json.data.user.email);",
+            "}"
+          ] } }
+        ],
+        "request": {
+          "method": "POST",
+          "header": [{ "key": "Content-Type", "value": "application/json" }],
+          "body": { "mode": "raw", "raw": "{\n  \"email\": \"bob_{{$timestamp}}@example.com\",\n  \"firstName\": \"Bob\",\n  \"lastName\": \"B\"\n}" },
+          "url": "{{baseUrl}}/api/users"
+        }
+      },
+      {
+        "name": "Fund Wallet (Alice)",
+        "request": {
+          "method": "POST",
+          "header": [
+            { "key": "Content-Type", "value": "application/json" },
+            { "key": "Authorization", "value": "Bearer {{tokenA}}" }
+          ],
+          "body": { "mode": "raw", "raw": "{\n  \"amount\": 1000\n}" },
+          "url": "{{baseUrl}}/api/wallet/fund"
+        }
+      },
+      {
+        "name": "Get Balance (Alice)",
+        "request": {
+          "method": "GET",
+          "header": [{ "key": "Authorization", "value": "Bearer {{tokenA}}" }],
+          "url": "{{baseUrl}}/api/wallet/balance"
+        }
+      },
+      {
+        "name": "Transfer Alice -> Bob",
+        "request": {
+          "method": "POST",
+          "header": [
+            { "key": "Content-Type", "value": "application/json" },
+            { "key": "Authorization", "value": "Bearer {{tokenA}}" }
+          ],
+          "body": { "mode": "raw", "raw": "{\n  \"recipientEmail\": \"{{emailB}}\",\n  \"amount\": 250\n}" },
+          "url": "{{baseUrl}}/api/wallet/transfer"
+        }
+      },
+      {
+        "name": "Withdraw (Alice)",
+        "request": {
+          "method": "POST",
+          "header": [
+            { "key": "Content-Type", "value": "application/json" },
+            { "key": "Authorization", "value": "Bearer {{tokenA}}" }
+          ],
+          "body": { "mode": "raw", "raw": "{\n  \"amount\": 100\n}" },
+          "url": "{{baseUrl}}/api/wallet/withdraw"
+        }
+      },
+      {
+        "name": "Withdraw - Insufficient Funds (negative test)",
+        "request": {
+          "method": "POST",
+          "header": [
+            { "key": "Content-Type", "value": "application/json" },
+            { "key": "Authorization", "value": "Bearer {{tokenA}}" }
+          ],
+          "body": { "mode": "raw", "raw": "{\n  \"amount\": 999999\n}" },
+          "url": "{{baseUrl}}/api/wallet/withdraw"
+        }
+      }
+    ]
+  }
